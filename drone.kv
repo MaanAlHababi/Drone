@@ -1,0 +1,26 @@
+#:import menu menu
+
+MainWidget:
+
+<MainWidget>:
+    menu_widget: menu_widget
+    score_widget1: score_widget1
+    score_widget2: score_widget2
+
+    MenuWidget:
+        id: menu_widget
+        size: root.size
+
+    Image:
+        id: score_widget1
+        source: "images/purple_balloon.png"
+        size: "100dp", "100dp"
+        pos: 10, 503
+        opacity: 0
+
+    Label:
+        id: score_widget2
+        text: root.SCORE
+        font_size: dp(50)
+        pos: 70, 500
+        opacity: 0
