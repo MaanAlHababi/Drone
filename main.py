@@ -149,7 +149,6 @@ class MainWidget(Widget):
             self.ebullet_coordinates[1] = (x2, y2)
 
     def entity_shoot(self):
-        print(self.entities)
         for child in self.entities:
             self.get_entity_coordinates()
 
@@ -234,22 +233,37 @@ class MainWidget(Widget):
 
     def update_entities(self):
         for child in self.entities:
-            self.entity_shoot()
-            break
+            z = random.randint(1, 250)
 
+            a = random.randint(1, 215)
+
+            def upward():
+                child.pos[1] += 3
+
+            def downward():
+                child.pos[1] -= 3
+
+            if z % 2 == 0:
+                upward()
+
+            else:
+                downward()
+
+            if a == 205:
+                self.entity_shoot()
 
             # BORDER LIMITS --- BORDER LIMITS --- BORDER LIMITS
-            #if child.pos[1] <= -10:
-            #    child.pos[1] = -10
+            if child.pos[1] <= -10:
+                child.pos[1] = -10
 
-            #elif child.pos[1] >= self.height - 70:
-            #    child.pos[1] = self.height - 70
+            elif child.pos[1] >= self.height - 70:
+                child.pos[1] = self.height - 70
 
-            #if child.pos[0] <= 0:
-            #    child.pos[0] = 0
+            if child.pos[0] <= 0:
+                child.pos[0] = 0
 
-            #elif child.pos[0] >= self.width - 80:
-            #    child.pos[0] = self.width - 80
+            elif child.pos[0] >= self.width - 80:
+                child.pos[0] = self.width - 80
 
 class Drone(App):
     def build(self):
