@@ -1,15 +1,22 @@
 #:import menu menu
+#:import losingmenu losingmenu
 
 MainWidget:
 
 <MainWidget>:
     menu_widget: menu_widget
+    losingmenu_widget: losingmenu_widget
     score_widget1: score_widget1
     score_widget2: score_widget2
 
     MenuWidget:
         id: menu_widget
         size: root.size
+
+    LosingMenuWidget:
+        id: losingmenu_widget
+        size: root.size
+        opacity: 0
 
     Image:
         id: score_widget1

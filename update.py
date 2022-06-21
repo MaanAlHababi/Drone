@@ -6,7 +6,7 @@ def update(self, dt):
         self.update_player_bullet()
         self.update_entity_bullets()
         self.update_entities()
-        self.check_ebullet_collision()
+        # self.check_ebullet_collision()
         self.checkHealth()
 
         self.drone.pos[1] += self.current_speed_y

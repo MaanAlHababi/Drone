@@ -2,18 +2,22 @@ import random
 from kivy.uix.image import Image
 
 def init_balloons(self, dt):
-    balloon_types = ["images/yellow_balloon.png", "images/green_balloon.png", "images/purple_balloon.png",
-                     "images/red_balloon.png"]
-    balloon_type = random.choice(balloon_types)
+    if self.game_ongoing:
+        balloon_types = ["images/yellow_balloon.png", "images/green_balloon.png", "images/purple_balloon.png",
+                         "images/red_balloon.png"]
+        balloon_type = random.choice(balloon_types)
 
-    x = random.randint(100, self.width)
-    y = random.randint(50, 150)
+        x = random.randint(100, self.width)
+        y = random.randint(50, 150)
 
-    balloon = Image(source=balloon_type,
-                    pos=(x, y))
-    self.add_widget(balloon)
-    self.balloons.append(balloon)
-    self.balloon_list.append(balloon)
+        balloon = Image(source=balloon_type,
+                        pos=(x, y))
+        self.add_widget(balloon)
+        self.balloons.append(balloon)
+        self.balloon_list.append(balloon)
+
+    else:
+        pass
 
 def move_balloons(self):
     for child in self.balloons:
