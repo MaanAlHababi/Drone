@@ -16,12 +16,11 @@ import asyncio
 
 from parent_entity import ParentEntity
 from drone import PlayerDrone
-from entities import Entity
 
 
 class MainWidget(Widget):
     from controls import _keyboard_closed, _on_keyboard_down, _on_keyboard_up
-    from update import update, check_outOf
+    from update import update
     from clouds import init_clouds, move_clouds
     from balloons import init_balloons, move_balloons, check_drone_collect_balloon
     from playershoot import update_player_bullet, shoot
@@ -70,11 +69,9 @@ class MainWidget(Widget):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
 
-        Clock.schedule_interval(self.check_ebullet_collision, 1 / 60)
-        Clock.schedule_interval(self.update, 1 / 600)
-        Clock.schedule_interval(self.check_outOf, 1 / 600)
-        Clock.schedule_interval(self.init_balloons, 7)
+        Clock.schedule_interval(self.update, 1 / 6000)
 
+        Clock.schedule_interval(self.init_balloons, 7)
         Clock.schedule_interval(self.init_clouds, 1 / 5)
 
     def reset(self):
@@ -105,10 +102,7 @@ class MainWidget(Widget):
         # self.init_round()
 
     def init_drone(self):
-        self.drone = PlayerDrone(self.width, self.height,
-                                 Image(source="images/drone.png",
-                                       pos=(100, 300),
-                                       size=(75, 75)))
+        self.drone = PlayerDrone(self.width, self.height)
         self.add_widget(self.drone.get_widget())
 
         self.healthbar = ProgressBar(max=150, value=self.drone.health)
@@ -116,29 +110,29 @@ class MainWidget(Widget):
 
     def init_round(self):
         self.round += 1
-        enemies = ["images/evil_drone.png", "images/angry_cloud.png", "images/skullairballoon.png",
+        '''enemies = ["images/evil_drone.png", "images/angry_cloud.png", "images/skullairballoon.png",
                    "images/balloonjester.png"]
 
         positions = [(700, 400), (700, 250), (700, 100)]
 
-        entity1 = Entity(self.width, self.height,
-                         Image(source=random.choice(enemies),
-                               pos=positions[0],
-                               size=(75, 75)))
+        enemy1 = Enemy(self.width, self.height,
+                       Image(source=random.choice(enemies),
+                             pos=positions[0],
+                             size=(75, 75)))
 
-        entity2 = Entity(self.width, self.height,
-                         Image(source=random.choice(enemies),
-                               pos=positions[1],
-                               size=(75, 75)))
+        enemy2 = Enemy(self.width, self.height,
+                       Image(source=random.choice(enemies),
+                             pos=positions[1],
+                             size=(75, 75)))
 
-        entity3 = Entity(self.width, self.height,
-                         Image(source=random.choice(enemies),
-                               pos=positions[2],
-                               size=(75, 75)))
+        enemy3 = Enemy(self.width, self.height,
+                       Image(source=random.choice(enemies),
+                             pos=positions[2],
+                             size=(75, 75)))
 
-        self.add_widget(entity1.get_widget())
-        self.add_widget(entity2.get_widget())
-        self.add_widget(entity3.get_widget())
+        self.add_widget(enemy1.get_widget())
+        self.add_widget(enemy2.get_widget())
+        self.add_widget(enemy3.get_widget())'''
 
         '''
         entity1 = Image(source=random.choice(enemies),
