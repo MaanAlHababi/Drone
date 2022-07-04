@@ -1,10 +1,9 @@
 import asyncio
 from drone import PlayerDrone
+from update import shoot
 
 async def delayWithoutFreeze():
-    # print('Wait 3 segs...')
-    await asyncio.sleep(.55)
-    # print('3 segs elapsed...')
+    await asyncio.sleep(.45)
 
 def _keyboard_closed(self):
     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -30,10 +29,10 @@ def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
             if task.get_name() == 'shootTask':
                 j += 1
                 # print('Theres already {} shootTask'.format(j))
-            if j == 0:  # If j == 0 means that no delay is running so you can press and action again
+            if j == 0:  # If j == 0 means that no delay is running, so you can press and action again
                 # This is how you call the async func
                 asyncio.create_task(delayWithoutFreeze(), name='shootTask')
-                self.shoot()
+                shoot(self)
 
 def _on_keyboard_up(self, keyboard, keycode):
     if keycode[1] == 'w':

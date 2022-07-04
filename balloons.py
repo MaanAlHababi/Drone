@@ -12,7 +12,7 @@ def init_balloons(self, dt):
         y = random.randint(50, 150)
 
         balloon = Image(source=balloon_type,
-                        pos=(400, 300),
+                        pos=(x, y),
                         size=(75, 75))
         self.add_widget(balloon)
         self.balloons.append(balloon)

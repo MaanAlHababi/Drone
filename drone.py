@@ -1,17 +1,16 @@
 from kivy.uix.image import Image
+from parent_entity import ParentEntity
 
 
-class PlayerDrone:
+class PlayerDrone(ParentEntity):
     health = 150
 
     speedx = 0
     speedy = 0
 
-    def __init__(self, game_width, game_height):
-        super().__init__()
-        self.widget = Image(source="images/drone.png",
-                            pos=(100, 300),
-                            size=(75, 75))
+    def __init__(self, game_width, game_height, widget):
+        super().__init__(game_width, game_height, widget)
+        self.widget = widget
         self.game_width = game_width
         self.game_height = game_height
 
@@ -20,13 +19,9 @@ class PlayerDrone:
 
         self.health = 150
 
-        # ParentEntity.all.append(widget)
 
     def get_coords(self):
         return [self.widget.pos, [self.widget.pos[0] + self.width, self.widget.pos[1] + self.height]]
-
-    def get_widget(self):
-        return self.widget
 
     def get_health(self):
         return self.health
