@@ -1,5 +1,6 @@
 import random
 from kivy.uix.image import Image
+from drone import PlayerDrone
 
 def init_balloons(self, dt):
     if self.game_ongoing:
@@ -11,7 +12,8 @@ def init_balloons(self, dt):
         y = random.randint(50, 150)
 
         balloon = Image(source=balloon_type,
-                        pos=(x, y))
+                        pos=(400, 300),
+                        size=(75, 75))
         self.add_widget(balloon)
         self.balloons.append(balloon)
         self.balloon_list.append(balloon)
@@ -31,22 +33,17 @@ def move_balloons(self):
             child.pos[1] += 3
 
 def check_drone_collect_balloon(self):
-    self.get_drone_coordinates()
-    self.get_balloon_coordinates()
-
-    drone_xmax, drone_ymax = self.drone_coordinates[1][0], self.drone_coordinates[1][1]
-
-    balloon_xmin, balloon_ymin = self.balloon_coordinates[0][0], self.balloon_coordinates[0][1]
-    balloon_xmax, balloon_ymax = self.balloon_coordinates[1][0], self.balloon_coordinates[1][1]
-
-    drone_center_x = drone_xmax - self.drone.width / 2
-    drone_center_y = drone_ymax - self.drone.height / 2
-
-    if balloon_xmax >= drone_center_x >= balloon_xmin and balloon_ymax >= drone_center_y >= balloon_ymin:
-        for balloon in self.balloons:
+    for balloon in self.balloons:
+        object_coords = [balloon.pos, [balloon.pos[0] + balloon.width, balloon.pos[1] + balloon.height]]
+        # print(object_coords)
+        # print(self.drone.get_coords())
+        if self.drone.is_colliding_with(object_coords):
             self.remove_widget(balloon)
-            for balloon_ in self.balloons:
-                self.balloons.remove(balloon_)
-                self.remove_widget(balloon_)
+            self.balloons.remove(balloon)
             self.score += 1
             self.SCORE = (str(int(self.score)))
+            #print("COLLIDING")
+
+        #else:
+            #print("NOT COLLIDING")
+

@@ -1,5 +1,6 @@
 import asyncio
 from kivy.uix.image import Image
+from drone import PlayerDrone
 
 
 # Here you create a coroutine (global scope)
@@ -10,12 +11,8 @@ async def delayWithoutFreeze():
 
 
 def shoot(self):
-    self.get_drone_coordinates()
-    # print(self.drone_coordinates[0][0])
-    # print(self.drone_coordinates[0][1])
-
-    x = self.drone_coordinates[0][0]
-    y = self.drone_coordinates[0][1] - 20
+    x = self.drone.get_coords()[0][0]
+    y = self.drone.get_coords()[0][1] - 20
 
     self.drone_bullet = Image(source="images/drone_bullet.png",
                               pos=(x, y))

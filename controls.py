@@ -1,4 +1,5 @@
 import asyncio
+from drone import PlayerDrone
 
 async def delayWithoutFreeze():
     # print('Wait 3 segs...')
@@ -13,16 +14,16 @@ def _keyboard_closed(self):
 def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
     j = 0  # This is a counter to know if a delay task is running
     if keycode[1] == 'w':
-        self.current_speed_y = +5
+        PlayerDrone.speedy = +5
 
     elif keycode[1] == 'a':
-        self.current_speed_x = -5
+        PlayerDrone.speedx = -5
 
     elif keycode[1] == 's':
-        self.current_speed_y = -5
+        PlayerDrone.speedy = -5
 
     elif keycode[1] == 'd':
-        self.current_speed_x = +5
+        PlayerDrone.speedx = +5
 
     elif keycode[1] == 'spacebar':
         for task in asyncio.all_tasks():  # This loop checks if there's a delay already running
@@ -36,13 +37,13 @@ def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
 
 def _on_keyboard_up(self, keyboard, keycode):
     if keycode[1] == 'w':
-        self.current_speed_y = 0
+        PlayerDrone.speedy = 0
 
     elif keycode[1] == 'a':
-        self.current_speed_x = 0
+        PlayerDrone.speedx = 0
 
     elif keycode[1] == 's':
-        self.current_speed_y = 0
+        PlayerDrone.speedy = 0
 
     elif keycode[1] == 'd':
-        self.current_speed_x = 0
+        PlayerDrone.speedx = 0

@@ -14,13 +14,17 @@ from kivy.core.window import Window
 import random
 import asyncio
 
+from parent_entity import ParentEntity
+from drone import PlayerDrone
+from entities import Entity
+
 
 class MainWidget(Widget):
     from controls import _keyboard_closed, _on_keyboard_down, _on_keyboard_up
-    from update import update
+    from update import update, check_outOf
     from clouds import init_clouds, move_clouds
     from balloons import init_balloons, move_balloons, check_drone_collect_balloon
-    from playershoot import shoot, update_player_bullet
+    from playershoot import update_player_bullet, shoot
     from dronehealthcheck import checkHealth
 
     game_ongoing = False
@@ -32,8 +36,7 @@ class MainWidget(Widget):
 
     drone = None
     drone_bullet = None
-
-    entity_bullet = None
+    bullets = []
 
     score = 0
     SCORE = StringProperty(str(score))
@@ -41,13 +44,6 @@ class MainWidget(Widget):
     clouds = []
     balloons = []
     balloon_list = []
-    bullets = []
-
-    current_speed_y = 0
-    current_speed_x = 0
-
-    ecurrent_speed_y = 0
-    ecurrent_speed_x = 0
 
     drone_coordinates = [[0, 0], [0, 0]]
     balloon_coordinates = [[0, 0], [0, 0]]
@@ -56,16 +52,14 @@ class MainWidget(Widget):
     entity2_coordinates = [[0, 0], [0, 0]]
     entity3_coordinates = [[0, 0], [0, 0]]
 
-    ebullet_coordinates = [[0, 0], [0, 0]]
-
     round = 0
     entities = []
+
+    entity_bullet = None
     entity_bullets = []
+    ebullet_coordinates = [[0, 0], [0, 0]]
 
     healthbar = None
-    player_health = 15
-
-    enemy_health = []
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,7 +72,9 @@ class MainWidget(Widget):
 
         Clock.schedule_interval(self.check_ebullet_collision, 1 / 60)
         Clock.schedule_interval(self.update, 1 / 600)
+        Clock.schedule_interval(self.check_outOf, 1 / 600)
         Clock.schedule_interval(self.init_balloons, 7)
+
         Clock.schedule_interval(self.init_clouds, 1 / 5)
 
     def reset(self):
@@ -98,7 +94,6 @@ class MainWidget(Widget):
 
     def start(self):
         self.game_ongoing = True
-        self.player_health = 15
         self.menu_widget.opacity = 0
         self.losingmenu_widget.opacity = 0
         self.score_widget1.opacity = 1
@@ -107,27 +102,45 @@ class MainWidget(Widget):
         self.SCORE = str(0)
 
         self.init_drone()
-        self.init_round()
+        # self.init_round()
 
     def init_drone(self):
-        self.drone = Image(source="images/drone.png",
-                           pos=(100, 300))
+        self.drone = PlayerDrone(self.width, self.height,
+                                 Image(source="images/drone.png",
+                                       pos=(100, 300),
+                                       size=(75, 75)))
+        self.add_widget(self.drone.get_widget())
 
-        self.add_widget(self.drone)
-        self.drone_coordinates[0] = self.drone.pos
-
-        self.healthbar = ProgressBar(max=150, value=self.player_health)
-
+        self.healthbar = ProgressBar(max=150, value=self.drone.health)
         self.add_widget(self.healthbar)
 
     def init_round(self):
         self.round += 1
-
         enemies = ["images/evil_drone.png", "images/angry_cloud.png", "images/skullairballoon.png",
                    "images/balloonjester.png"]
 
         positions = [(700, 400), (700, 250), (700, 100)]
 
+        entity1 = Entity(self.width, self.height,
+                         Image(source=random.choice(enemies),
+                               pos=positions[0],
+                               size=(75, 75)))
+
+        entity2 = Entity(self.width, self.height,
+                         Image(source=random.choice(enemies),
+                               pos=positions[1],
+                               size=(75, 75)))
+
+        entity3 = Entity(self.width, self.height,
+                         Image(source=random.choice(enemies),
+                               pos=positions[2],
+                               size=(75, 75)))
+
+        self.add_widget(entity1.get_widget())
+        self.add_widget(entity2.get_widget())
+        self.add_widget(entity3.get_widget())
+
+        '''
         entity1 = Image(source=random.choice(enemies),
                         pos=positions[0])
 
@@ -140,18 +153,10 @@ class MainWidget(Widget):
         self.add_widget(entity1)
         self.add_widget(entity2)
         self.add_widget(entity3)
-        print(self.entities)
 
         self.entities.append(entity1)
         self.entities.append(entity2)
-        self.entities.append(entity3)
-
-    def get_drone_coordinates(self):
-        x1, y1 = self.drone.pos
-        self.drone_coordinates[0] = [x1, y1]
-
-        x2, y2 = self.drone.pos[0] + self.drone.width, self.drone.pos[1] + self.drone.height
-        self.drone_coordinates[1] = [x2, y2]
+        self.entities.append(entity3)'''
 
     def get_balloon_coordinates(self):
         for balloon in self.balloons:
@@ -162,7 +167,7 @@ class MainWidget(Widget):
             self.balloon_coordinates[1] = [x2, y2]
 
     def get_entity_coordinates(self):
-        #First Entity
+        # First Entity
         self.entity1_coordinates[0] = self.entities[0].pos
 
         self.entity1_coordinates[1][0] = self.entities[0].pos[0] + self.entities[0].width
@@ -201,7 +206,6 @@ class MainWidget(Widget):
         elif self.entities.index(mob) == 2:
             x, y = self.entity3_coordinates[0]
 
-
         if mob.source == "images/evil_drone.png":
             self.entity_bullet = Image(source="images/evil_drone_bullet2.png",
                                        pos=(x, y))
@@ -219,13 +223,13 @@ class MainWidget(Widget):
                                        pos=(x, y))
 
         self.add_widget(self.entity_bullet)
-        self.entity_bullets.append(self.entity_bullet)  # Add to list for them to move
-            # print(self.entity_bullets)
+        self.entity_bullets.append(self.entity_bullet)
+        # Add to list for them to move
+        # print(self.entity_bullets)
 
     def update_entity_bullets(self):
-        self.get_drone_coordinates()
-        drone_xmin, drone_ymin = self.drone_coordinates[0][0], self.drone_coordinates[0][1]
-        drone_xmax, drone_ymax = self.drone_coordinates[1][0], self.drone_coordinates[1][1]
+        drone_xmin, drone_ymin = self.drone.get_coords()[0][0], self.drone.get_coords()[0][1]
+        drone_xmax, drone_ymax = self.drone.get_coords()[1][0], self.drone.get_coords()[1][1]
 
         self.get_ebullet_coordinates()
         bullet_xmin, bullet_ymin = self.ebullet_coordinates[0][0], self.ebullet_coordinates[0][1] - 20
@@ -258,11 +262,9 @@ class MainWidget(Widget):
             self.entity_bullet.pos[0] -= final_xdistance
             self.entity_bullet.pos[1] -= final_ydistance
 
-        pass
-
     def check_ebullet_collision(self, dt):
         if self.game_ongoing:
-            self.get_drone_coordinates()
+            self.drone.get_coords()
             self.get_ebullet_coordinates()
 
             drone_xmin, drone_ymin = self.drone_coordinates[0][0], self.drone_coordinates[0][1]
@@ -290,6 +292,7 @@ class MainWidget(Widget):
     def update_entities(self):
         for child in self.entities:
             z = random.randint(1, 3000)
+
             def upward():
                 child.pos[1] += .1
 
@@ -323,7 +326,6 @@ class MainWidget(Widget):
             self.entity_shoot()
 
 
-
 class Drone(App):
     def build(self):
         Window.clearcolor = (.2, .6, .8, 1)
@@ -332,7 +334,7 @@ class Drone(App):
 
     async def kivyCoro(self):  # This is the method that's gonna launch your kivy app
         await self.async_run(async_lib='asyncio')
-        print('Kivy async app finished...')
+        # print('Kivy async app finished...')
 
     # This func will start all the "tasks", in this case the only task is the kivy app
     async def base(self):
