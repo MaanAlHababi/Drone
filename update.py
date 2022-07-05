@@ -8,7 +8,7 @@ from drone import PlayerDrone
 
 # Here you create a coroutine (global scope)
 async def delayWithoutFreeze():
-    await asyncio.sleep(.45)
+    await asyncio.sleep(.35)
 
 async def enemyShootDelay():
     await asyncio.sleep(random.random())

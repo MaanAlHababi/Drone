@@ -3,7 +3,7 @@ from drone import PlayerDrone
 from update import shoot
 
 async def delayWithoutFreeze():
-    await asyncio.sleep(.45)
+    await asyncio.sleep(.35)
 
 def _keyboard_closed(self):
     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
