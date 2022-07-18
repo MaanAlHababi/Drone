@@ -3,12 +3,11 @@ from drone import PlayerDrone
 from update import shoot
 
 async def delayWithoutFreeze():
-    await asyncio.sleep(.35)
+    await asyncio.sleep(.45)
 
 def _keyboard_closed(self):
     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
     self._keyboard = None
-
 
 def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
     j = 0  # This is a counter to know if a delay task is running

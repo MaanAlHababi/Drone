@@ -6,3 +6,6 @@ class ParentEntity:
 
     def get_widget(self):
         return self.widget
+
+    def get_coords(self):
+        return [self.widget.pos, [self.widget.pos[0] + self.width, self.widget.pos[1] + self.height]]

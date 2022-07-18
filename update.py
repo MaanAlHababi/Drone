@@ -5,13 +5,13 @@ from kivy.uix.image import Image
 
 from parent_entity import ParentEntity
 from drone import PlayerDrone
+from enemies import Enemy
+from bullets import Bullet, DroneBullet, check_collision
+
 
 # Here you create a coroutine (global scope)
 async def delayWithoutFreeze():
-    await asyncio.sleep(.35)
-
-async def enemyShootDelay():
-    await asyncio.sleep(random.random())
+    await asyncio.sleep(.45)
 
 
 # MAIN GAME LOOP
@@ -22,39 +22,53 @@ def update(self, dt):
         self.move_clouds()
         self.move_balloons()
         self.check_drone_collect_balloon()
-        self.update_entity_bullets()
-
-        #self.check_ebullet_collision()
-
+        self.check_collision()
 
         # UPDATES PLAYER MOVEMENT AND FIXES POSITION IF OUT OF WINDOW BOUNDS
         self.drone.move()
         self.drone.check_outOf_window()
 
+        for bullet in Bullet.enemy_bullets:
+            if Bullet.check_outOf_window(bullet):
+                self.remove_widget(bullet.widget)
+                Bullet.enemy_bullets.remove(bullet)
+
+        for bullet in DroneBullet.bullets:
+            if DroneBullet.check_outOf_window(bullet):
+                self.remove_widget(bullet.widget)
+                DroneBullet.bullets.remove(bullet)
+
         # CHECK THE PLAYER'S HEALTH
-        if self.healthbar.value == 0:
-            # print("GAME OVER")
+        if self.drone.health <= 0:
             self.game_ongoing = False
             self.losingmenu_widget.opacity = 1
 
-
         # UPDATE PLAYER'S BULLETS
-        for self.drone_bullet in self.bullets:
-            self.drone_bullet.pos[0] += 10
+        for bullet in DroneBullet.bullets:
+            bullet.widget.pos[0] += 10
 
         pass
+
+        # MOB SHOOTING & UPDATING BULLETS
+        self.mobShoot()
+
+        for bullet in Bullet.enemy_bullets:
+            bullet.widget.pos[0] -= 10
 
     else:
         pass
+
 
 def shoot(self):
     x = self.drone.get_coords()[0][0]
     y = self.drone.get_coords()[0][1] - 20
 
-    self.drone_bullet = Image(source="images/drone_bullet.png",
-                              pos=(x, y))
+    widget = Image(source="assets/drone_bullet.png",
+                   pos=(x, y))
 
-    self.add_widget(self.drone_bullet)
-    self.bullets.append(self.drone_bullet)
+    drone_bullet = DroneBullet(widget, self.width, self.height)
+
+    self.add_widget(drone_bullet.widget)
+    DroneBullet.bullets.append(drone_bullet)
 
     asyncio.create_task(delayWithoutFreeze(), name='shootTask')

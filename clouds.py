@@ -3,7 +3,7 @@ from kivy.uix.image import Image
 
 def init_clouds(self, dt):
     if self.game_ongoing:
-        cloud_types = ["images/cloudbig.png", "images/cloudbig1.png", "images/cloudbig2.png"]
+        cloud_types = ["assets/cloudbig.png", "assets/cloudbig1.png", "assets/cloudbig2.png"]
         cloud_type = random.choice(cloud_types)
 
         a = self.width

@@ -19,10 +19,6 @@ class PlayerDrone(ParentEntity):
 
         self.health = 150
 
-
-    def get_coords(self):
-        return [self.widget.pos, [self.widget.pos[0] + self.width, self.widget.pos[1] + self.height]]
-
     def get_health(self):
         return self.health
 

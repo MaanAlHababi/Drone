@@ -1,11 +1,12 @@
+import random
+import asyncio
 from kivy.uix.image import Image
 
 from parent_entity import ParentEntity
-
+from bullets import Bullet
 
 class Enemy(ParentEntity):
     enemies = []
-    enemy_bullets = []
     speedy = 0
 
     def __init__(self, game_width, game_height, widget):
@@ -13,7 +14,7 @@ class Enemy(ParentEntity):
             game_width, game_height, widget
         )
 
-        Enemy.enemies.append(widget)
+        Enemy.enemies.append(self)
 
     def move(self):
         new_pos = (self.widget.pos[0], self.widget.pos[1] + self.speedy)
@@ -24,24 +25,21 @@ class Enemy(ParentEntity):
 
     def shoot(self, widget):
         x, y = self.get_pos(widget)
+        bullets_dict = {"assets/evil_drone.png": "assets/evil_drone_bullet2.png",
+                        "assets/angry_cloud.png": "assets/lightning_bullet2.png",
+                        "assets/skullairballoon.png": "assets/bomb.png",
+                        "assets/balloonjester.png": "assets/jesters_knife.png"}
 
-        global entity_bullet
-        if widget.source == "images/evil_drone.png":
-            entity_bullet = Image(source="images/evil_drone_bullet2.png",
-                                  pos=(x, y))
+        global entity_bullet, src
+        for i in bullets_dict:
+            if widget.source == i:
+                src = bullets_dict.get(i)
+        widget = Image(source=src,
+                       pos=(x+20, y+20),
+                       size=(50, 50))
 
-        elif widget.source == "images/angry_cloud.png":
-            entity_bullet = Image(source="images/lightning_bullet2.png",
-                                  pos=(x, y))
-
-        elif widget.source == "images/skullairballoon.png":
-            entity_bullet = Image(source="images/bomb.png",
-                                  pos=(x, y))
-
-        elif widget.source == "images/balloonjester.png":
-            entity_bullet = Image(source="images/jesters_knife.png",
-                                  pos=(x, y))
+        entity_bullet = Bullet(widget)
 
 
-        Enemy.enemy_bullets.append(entity_bullet)
-        return entity_bullet
+        Bullet.enemy_bullets.append(entity_bullet)
+        return entity_bullet.widget
