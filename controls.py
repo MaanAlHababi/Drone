@@ -3,7 +3,7 @@ from drone import PlayerDrone
 from update import shoot
 
 async def delayWithoutFreeze():
-    await asyncio.sleep(.45)
+    await asyncio.sleep(.35)
 
 def _keyboard_closed(self):
     self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -32,6 +32,7 @@ def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
                 # This is how you call the async func
                 asyncio.create_task(delayWithoutFreeze(), name='shootTask')
                 shoot(self)
+                break
 
 def _on_keyboard_up(self, keyboard, keycode):
     if keycode[1] == 'w':

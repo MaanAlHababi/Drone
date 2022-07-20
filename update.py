@@ -11,7 +11,7 @@ from bullets import Bullet, DroneBullet, check_collision
 
 # Here you create a coroutine (global scope)
 async def delayWithoutFreeze():
-    await asyncio.sleep(.45)
+    await asyncio.sleep(.35)
 
 
 # MAIN GAME LOOP
@@ -40,8 +40,7 @@ def update(self, dt):
 
         # CHECK THE PLAYER'S HEALTH
         if self.drone.health <= 0:
-            self.game_ongoing = False
-            self.losingmenu_widget.opacity = 1
+            self.lose()
 
         # UPDATE PLAYER'S BULLETS
         for bullet in DroneBullet.bullets:
@@ -49,9 +48,39 @@ def update(self, dt):
 
         pass
 
-        # MOB SHOOTING & UPDATING BULLETS
-        self.mobShoot()
+        # CHECK PLAYER BULLET COLLISION WITH MOBS
+        if len(Enemy.enemies) > 0:
+            for mob in Enemy.enemies:
+                for bullet in DroneBullet.bullets:
+                    if bullet.is_colliding_with(mob):
+                        self.remove_widget(bullet.widget)
+                        self.remove_widget(mob.widget)
+                        DroneBullet.bullets.remove(bullet)
+                        Enemy.enemies.remove(mob)
 
+        else:
+            self.lose()
+
+        # MOB SHOOTING
+        m = self.mobShoot()
+        try:
+            if m.shoot_cooldown == 0:
+                self.add_widget(m.shoot(m.widget))
+                m.shoot_cooldown = m.original_cd
+
+            elif m.shoot_cooldown > 0:
+                m.shoot_cooldown -= 1
+
+            else:
+                pass
+        except AttributeError:
+            pass
+
+        finally:
+            pass
+
+
+        # UPDATING BULLETS
         for bullet in Bullet.enemy_bullets:
             bullet.widget.pos[0] -= 10
 

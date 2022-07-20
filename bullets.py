@@ -1,5 +1,7 @@
 import drone
 from drone import PlayerDrone
+
+
 class ParentBullet:
     def __init__(self, widget):
         self.widget = widget
@@ -9,6 +11,7 @@ class ParentBullet:
 
     def get_coords(self):
         return [self.widget.pos, [self.widget.pos[0] + self.width, self.widget.pos[1] + self.height]]
+
 
 class DroneBullet(ParentBullet):
     bullets = []
@@ -27,6 +30,18 @@ class DroneBullet(ParentBullet):
         if self.widget.pos[0] >= self.game_width - 20:
             return True
         return False
+
+    def is_colliding_with(self, mob):
+        mob_xmin, mob_xmax = mob.get_coords()[0][0], mob.get_coords()[1][0]
+        mob_ymin, mob_ymax = mob.get_coords()[0][1], mob.get_coords()[1][1]
+
+        bullet_xmin, bullet_xmax = self.get_coords()[0][0], self.get_coords()[1][0]
+        bullet_ymin, bullet_ymax = self.get_coords()[0][1], self.get_coords()[1][1]
+
+        if (mob_xmax >= bullet_xmax >= mob_xmin + 50) and (mob_ymax >= bullet_ymin and mob_ymin <= bullet_ymax
+        ):
+            return True
+
 
 class Bullet(ParentBullet):
     enemy_bullets = []
@@ -53,6 +68,7 @@ class Bullet(ParentBullet):
         if (bullet_xmax >= drone_xmax >= bullet_xmin and (bullet_ymin <= drone_ymax and bullet_ymax >= drone_ymin)
         ):
             return True
+
 
 def check_collision(self):
     for bullet in Bullet.enemy_bullets:

@@ -9,10 +9,13 @@ class Enemy(ParentEntity):
     enemies = []
     speedy = 0
 
-    def __init__(self, game_width, game_height, widget):
+    def __init__(self, game_width, game_height, widget, shoot_cooldown):
         super().__init__(
             game_width, game_height, widget
         )
+
+        self.shoot_cooldown = shoot_cooldown
+        self.original_cd = shoot_cooldown
 
         Enemy.enemies.append(self)
 
