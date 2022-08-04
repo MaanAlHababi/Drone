@@ -38,8 +38,7 @@ class DroneBullet(ParentBullet):
         bullet_xmin, bullet_xmax = self.get_coords()[0][0], self.get_coords()[1][0]
         bullet_ymin, bullet_ymax = self.get_coords()[0][1], self.get_coords()[1][1]
 
-        if (mob_xmax >= bullet_xmax >= mob_xmin + 50) and (mob_ymax >= bullet_ymin and mob_ymin <= bullet_ymax
-        ):
+        if (mob_xmin+30 < bullet_xmax) and (mob_xmax > bullet_xmin) and (mob_ymin+20 < bullet_ymax) and (mob_ymax-20 > bullet_ymin):
             return True
 
 

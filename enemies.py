@@ -9,7 +9,7 @@ class Enemy(ParentEntity):
     enemies = []
     speedy = 0
 
-    def __init__(self, game_width, game_height, widget, shoot_cooldown):
+    def __init__(self, game_width, game_height, widget, shoot_cooldown, health_value):
         super().__init__(
             game_width, game_height, widget
         )
@@ -17,17 +17,16 @@ class Enemy(ParentEntity):
         self.shoot_cooldown = shoot_cooldown
         self.original_cd = shoot_cooldown
 
+        self.health_value = health_value
+
         Enemy.enemies.append(self)
 
     def move(self):
         new_pos = (self.widget.pos[0], self.widget.pos[1] + self.speedy)
         self.widget.pos = new_pos
 
-    def get_pos(self, widget):
-        return self.widget.pos
-
     def shoot(self, widget):
-        x, y = self.get_pos(widget)
+        x, y = self.widget.pos
         bullets_dict = {"assets/evil_drone.png": "assets/evil_drone_bullet2.png",
                         "assets/angry_cloud.png": "assets/lightning_bullet2.png",
                         "assets/skullairballoon.png": "assets/bomb.png",

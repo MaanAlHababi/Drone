@@ -24,15 +24,19 @@ def _on_keyboard_down(self, keyboard, keycode, text, modifiers, cooldown=3):
         PlayerDrone.speedx = +5
 
     elif keycode[1] == 'spacebar':
-        for task in asyncio.all_tasks():  # This loop checks if there's a delay already running
-            if task.get_name() == 'shootTask':
-                j += 1
-                # print('Theres already {} shootTask'.format(j))
-            if j == 0:  # If j == 0 means that no delay is running, so you can press and action again
-                # This is how you call the async func
-                asyncio.create_task(delayWithoutFreeze(), name='shootTask')
-                shoot(self)
-                break
+        if self.game_ongoing:
+            for task in asyncio.all_tasks():  # This loop checks if there's a delay already running
+                if task.get_name() == 'shootTask':
+                    j += 1
+                    # print('Theres already {} shootTask'.format(j))
+                if j == 0:  # If j == 0 means that no delay is running, so you can press and action again
+                    # This is how you call the async func
+                    asyncio.create_task(delayWithoutFreeze(), name='shootTask')
+                    shoot(self)
+                    break
+
+        else:
+            pass
 
 def _on_keyboard_up(self, keyboard, keycode):
     if keycode[1] == 'w':

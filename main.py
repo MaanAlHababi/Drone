@@ -76,6 +76,7 @@ class MainWidget(Widget):
         self.losingmenu_widget.opacity = 1
 
         self.remove_widget(self.drone.widget)
+        self.remove_widget(self.healthbar)
         for i in DroneBullet.bullets:
             self.remove_widget(i.widget)
         for i in self.clouds:
@@ -101,10 +102,13 @@ class MainWidget(Widget):
         self.drone = PlayerDrone(self.width, self.height, widget)
         self.add_widget(self.drone.get_widget())
 
-        self.healthbar = ProgressBar(max=150, value=self.drone.health)
+        self.healthbar = ProgressBar(max=150, value=self.drone.health,
+                                     pos=(self.drone.widget.pos[0] - 13, self.drone.widget.pos[1] + 25))
         self.add_widget(self.healthbar)
 
     def init_round(self):
+        if Enemy.enemies:
+            Enemy.enemies.clear()
         self.round += 1
 
         enemies = ["assets/evil_drone.png", "assets/angry_cloud.png", "assets/skullairballoon.png",
@@ -117,23 +121,26 @@ class MainWidget(Widget):
                        Image(source=random.choice(enemies),
                              pos=positions[0],
                              size=img_size),
-                       random.randint(1, 4) * 20)
+                       random.randint(1, 4) * 20,
+                       health_value=100)
 
         enemy2 = Enemy(self.width, self.height,
                        Image(source=random.choice(enemies),
                              pos=positions[1],
                              size=img_size),
-                       random.randint(1, 4) * 20)
+                       random.randint(1, 4) * 20,
+                       health_value=100)
 
         enemy3 = Enemy(self.width, self.height,
                        Image(source=random.choice(enemies),
                              pos=positions[2],
                              size=img_size),
-                       random.randint(1, 4) * 20)
+                       random.randint(1, 4) * 20,
+                       health_value=100)
 
-        self.add_widget(enemy1.get_widget())
-        self.add_widget(enemy2.get_widget())
-        self.add_widget(enemy3.get_widget())
+        self.add_widget(enemy1.widget)
+        self.add_widget(enemy2.widget)
+        self.add_widget(enemy3.widget)
 
     def mobShoot(self):
         mobs = Enemy.enemies

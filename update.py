@@ -38,9 +38,20 @@ def update(self, dt):
                 self.remove_widget(bullet.widget)
                 DroneBullet.bullets.remove(bullet)
 
-        # CHECK THE PLAYER'S HEALTH
+        # CHECK THE PLAYER'S HEALTH | Health bar follows player
+        self.healthbar.pos = (self.drone.widget.pos[0] - 13, self.drone.widget.pos[1] + 25)
         if self.drone.health <= 0:
             self.lose()
+
+        # CHECK EACH MOB'S HEALTH | Health bar follows mobs
+        if len(Enemy.enemies) > 0:
+            for mob in Enemy.enemies:
+                if mob.health_value <= 0:
+                    self.remove_widget(mob.widget)
+                    Enemy.enemies.remove(mob)
+                    self.score += 5
+                    self.SCORE = (str(int(self.score)))
+
 
         # UPDATE PLAYER'S BULLETS
         for bullet in DroneBullet.bullets:
@@ -54,12 +65,13 @@ def update(self, dt):
                 for bullet in DroneBullet.bullets:
                     if bullet.is_colliding_with(mob):
                         self.remove_widget(bullet.widget)
-                        self.remove_widget(mob.widget)
                         DroneBullet.bullets.remove(bullet)
-                        Enemy.enemies.remove(mob)
+                        # Mob got hit
+                        mob.health_value -= 5
+
 
         else:
-            self.lose()
+            self.init_round()
 
         # MOB SHOOTING
         m = self.mobShoot()
@@ -90,10 +102,11 @@ def update(self, dt):
 
 def shoot(self):
     x = self.drone.get_coords()[0][0]
-    y = self.drone.get_coords()[0][1] - 20
+    y = self.drone.get_coords()[0][1]
 
     widget = Image(source="assets/drone_bullet.png",
-                   pos=(x, y))
+                   pos=(x, y),
+                   size=(50, 50))
 
     drone_bullet = DroneBullet(widget, self.width, self.height)
 
